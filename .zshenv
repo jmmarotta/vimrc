@@ -1,1 +1,1 @@
-/Users/julianmarotta/.zshenv
+. "$HOME/.cargo/env"
