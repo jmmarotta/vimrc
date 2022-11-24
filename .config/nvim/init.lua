@@ -2,32 +2,60 @@ opt = vim.opt
 
 opt.number = true
 opt.relativenumber = true
+
 opt.shiftwidth = 2
 opt.tabstop = 2
 opt.softtabstop = 2
 opt.expandtab = true
 opt.completeopt = 'menu,menuone,noselect'
+opt.hlsearch = false
+opt.incsearch = true
+
+opt.smartindent = true
+
+opt.wrap = false
+
+vim.g.mapleader = " "
+vim.keymap.set("n", "<Space>", "<Nop>", { silent = true })
+
+--[[vim.api.nvim_set_keymap(
+  "n",
+  "<Space>",
+  "<leader>",
+  { noremap = false }
+)]]--
+
+-- FZF keymapping --
 
 vim.api.nvim_set_keymap(
   "n",
-  "<C-p>",
-  ":GFiles<CR>",
+  "<leader>s",
+  "<cmd>:w!<CR>",
   { noremap = true }
 )
 
 vim.api.nvim_set_keymap(
   "n",
-  "<C-F>",
-  ":Rg<CR>",
+  "<leader>p",
+  "<cmd>:GFiles<CR>",
   { noremap = true }
 )
 
 vim.api.nvim_set_keymap(
   "n",
-  "<C-B>",
-  ":Buffers<CR>",
+  "<leader>f",
+  "<cmd>Rg<CR>",
   { noremap = true }
 )
+
+vim.api.nvim_set_keymap(
+  "n",
+  "<leader>b",
+  "<cmd>Buffers<CR>",
+  { noremap = true }
+)
+
+-- PACKER --
 
 local fn = vim.fn
 local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
@@ -43,9 +71,18 @@ require('packer').startup(function(use)
   use 'vim-ruby/vim-ruby'
   use 'tpope/vim-rails'
   use 'tpope/vim-endwise'
-  use 'rstacruz/vim-closer'
-  use 'neovim/nvim-lspconfig'
+  --use 'rstacruz/vim-closer'
+  use {
+	"windwp/nvim-autopairs",
+    config = function() require("nvim-autopairs").setup {} end
+  }
 
+  -- diffview
+  use { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' }
+
+  -- nvim lsp
+  use 'neovim/nvim-lspconfig'
+  -- nvim cmp
   use 'hrsh7th/cmp-nvim-lsp'
   use 'hrsh7th/cmp-buffer'
   use 'hrsh7th/cmp-path'
@@ -62,6 +99,9 @@ require('packer').startup(function(use)
     require('packer').sync()
   end
 end)
+
+-- NVIM LSP --
+
 --[[
 local nvim_lsp = require('lspconfig')
 
@@ -110,6 +150,7 @@ for _, lsp in ipairs(servers) do
   }
 end
 --]]
+
 local nvim_lsp = require('lspconfig')
 
 -- Use an on_attach function to only map the following keys
@@ -125,18 +166,18 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
   buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
   buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-  buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-  buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-  buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-  buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+  --buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+  --buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+  --buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+  buf_set_keymap('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+  buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  buf_set_keymap('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+  buf_set_keymap('n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
   buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
   buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-  buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-  buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+  buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+  buf_set_keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
 
 end
 
@@ -166,10 +207,10 @@ cmp.setup({
   mapping = cmp.mapping.preset.insert({
     ['<C-k>'] = cmp.mapping.scroll_docs(-4),
     ['<C-j>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.confirm({ select = true }),
+    --['<C-Space>'] = cmp.mapping.confirm({ select = true }),
     --['<C-Space>'] = cmp.mapping.complete(),
     ['<C-e>'] = cmp.mapping.abort(),
-    --['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
     --[[
     ["<Tab>"] = cmp.mapping(function(fallback)
       -- This little snippet will confirm with tab, and if no entry is selected, will confirm the first item
@@ -248,7 +289,8 @@ cmp.setup.cmdline(':', {
 })
 
 -- Setup lspconfig.
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+
 -- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
 require('lspconfig')['solargraph'].setup {
   capabilities = capabilities,
