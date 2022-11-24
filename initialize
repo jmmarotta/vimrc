@@ -1,0 +1,18 @@
+#!/bin/bash
+# install homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+# install brewfile packages
+cp Brewfile ~/Brewfile
+brew bundle install
+
+# install rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# install cht.sh
+PATH_DIR="$HOME/bin"
+mkdir -p "$PATH_DIR"
+curl https://cht.sh/:cht.sh > "$PATH_DIR/cht.sh"
+chmod +x "$PATH_DIR/cht.sh"
+
+./copy_dotfiles_to_home
