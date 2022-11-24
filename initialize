@@ -15,4 +15,6 @@ mkdir -p "$PATH_DIR"
 curl https://cht.sh/:cht.sh > "$PATH_DIR/cht.sh"
 chmod +x "$PATH_DIR/cht.sh"
 
-./copy_dotfiles_to_home
+# run to copy dotfiles to home
+# ./copy_dotfiles_to_home
+echo 'Execute to copy dotfiles to home directory: ./copy_dotfiles_to_home'
