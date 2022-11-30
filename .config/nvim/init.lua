@@ -11,6 +11,7 @@ opt.completeopt = 'menu,menuone,noselect'
 opt.hlsearch = false
 opt.incsearch = true
 
+opt.autoindent = true
 opt.smartindent = true
 
 opt.wrap = false
