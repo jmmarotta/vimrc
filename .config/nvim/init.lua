@@ -12,7 +12,6 @@ opt.hlsearch = false
 opt.incsearch = true
 
 opt.autoindent = true
-opt.smartindent = true
 
 opt.wrap = false
 
@@ -87,7 +86,7 @@ require('packer').startup(function(use)
   use 'junegunn/fzf.vim'
   use 'vim-ruby/vim-ruby'
   use 'tpope/vim-rails'
-  use 'tpope/vim-endwise'
+  --use 'tpope/vim-endwise'
   --use 'rstacruz/vim-closer'
   use {
 	"windwp/nvim-autopairs",
@@ -105,6 +104,7 @@ require('packer').startup(function(use)
          ts_update()
      end,
   }
+  use 'RRethy/nvim-treesitter-endwise'
 
   -- nvim lsp
   use 'neovim/nvim-lspconfig'
@@ -136,6 +136,10 @@ require'nvim-treesitter.configs'.setup {
   -- Automatically install missing parsers when entering buffer
   -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
   auto_install = true,
+
+  endwise = {
+    enable = true,
+  },
 
   -- List of parsers to ignore installing (for "all")
   -- ignore_install = { "javascript" },
