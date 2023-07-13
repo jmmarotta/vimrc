@@ -11,7 +11,7 @@ opt.completeopt = 'menu,menuone,noselect'
 opt.hlsearch = false
 opt.incsearch = true
 
-opt.smartindent = true
+opt.autoindent = true
 
 opt.wrap = false
 
@@ -86,7 +86,7 @@ require('packer').startup(function(use)
   use 'junegunn/fzf.vim'
   use 'vim-ruby/vim-ruby'
   use 'tpope/vim-rails'
-  use 'tpope/vim-endwise'
+  --use 'tpope/vim-endwise'
   --use 'rstacruz/vim-closer'
   use {
 	"windwp/nvim-autopairs",
@@ -100,10 +100,12 @@ require('packer').startup(function(use)
   use {
     'nvim-treesitter/nvim-treesitter',
      run = function()
+         require("nvim-treesitter.install").compilers = {"gcc"}
          local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
          ts_update()
      end,
   }
+  use 'RRethy/nvim-treesitter-endwise'
 
   -- nvim lsp
   use 'neovim/nvim-lspconfig'
@@ -116,6 +118,7 @@ require('packer').startup(function(use)
   -- For luasnip users.
   use 'L3MON4D3/LuaSnip'
   use 'saadparwaiz1/cmp_luasnip'
+  use 'github/copilot.vim'
 
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins
@@ -135,6 +138,10 @@ require'nvim-treesitter.configs'.setup {
   -- Automatically install missing parsers when entering buffer
   -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
   auto_install = true,
+
+  endwise = {
+    enable = true,
+  },
 
   -- List of parsers to ignore installing (for "all")
   -- ignore_install = { "javascript" },
@@ -364,4 +371,6 @@ require('lspconfig')['solargraph'].setup {
   capabilities = capabilities,
 	on_attach = on_attach,
 }
+
+vim.g.copilot_assume_mapped = true
 
