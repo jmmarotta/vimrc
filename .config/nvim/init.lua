@@ -100,6 +100,7 @@ require('packer').startup(function(use)
   use {
     'nvim-treesitter/nvim-treesitter',
      run = function()
+         require("nvim-treesitter.install").compilers = {"gcc"}
          local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
          ts_update()
      end,
@@ -117,6 +118,7 @@ require('packer').startup(function(use)
   -- For luasnip users.
   use 'L3MON4D3/LuaSnip'
   use 'saadparwaiz1/cmp_luasnip'
+  use 'github/copilot.vim'
 
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins
@@ -369,4 +371,6 @@ require('lspconfig')['solargraph'].setup {
   capabilities = capabilities,
 	on_attach = on_attach,
 }
+
+vim.g.copilot_assume_mapped = true
 
