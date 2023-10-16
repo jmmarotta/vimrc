@@ -19,7 +19,6 @@ vim.g.mapleader = " "
 vim.keymap.set("n", "<Space>", "<Nop>", { silent = true })
 
 -- FZF keymapping --
-
 vim.api.nvim_set_keymap(
   "n",
   "<leader>s",
@@ -86,8 +85,6 @@ require('packer').startup(function(use)
   use 'junegunn/fzf.vim'
   use 'vim-ruby/vim-ruby'
   use 'tpope/vim-rails'
-  --use 'tpope/vim-endwise'
-  --use 'rstacruz/vim-closer'
   use {
 	"windwp/nvim-autopairs",
     config = function() require("nvim-autopairs").setup {} end
@@ -115,10 +112,40 @@ require('packer').startup(function(use)
   use 'hrsh7th/cmp-path'
   use 'hrsh7th/cmp-cmdline'
   use 'hrsh7th/nvim-cmp'
+  use {
+    "zbirenbaum/copilot.lua",
+    cmd = "Copilot",
+    event = "InsertEnter",
+    config = function()
+      require("copilot").setup({
+        suggestion = { enabled = false },
+        panel = { enabled = false },
+      })
+    end,
+  }
+  use {
+    "zbirenbaum/copilot-cmp",
+    after = { "copilot.lua" },
+    config = function ()
+      require("copilot_cmp").setup()
+    end
+  }
+
+  use 'neovim/nvim-lspconfig'
+  use 'simrat39/rust-tools.nvim'
+
+  -- Debugging
+  -- use 'nvim-lua/plenary.nvim'
+  -- use 'mfussenegger/nvim-dap'
   -- For luasnip users.
   use 'L3MON4D3/LuaSnip'
   use 'saadparwaiz1/cmp_luasnip'
-  use 'github/copilot.vim'
+
+  use {
+    'nvim-telescope/telescope.nvim', tag = '0.1.4',
+  -- or                            , branch = '0.1.x',
+    requires = { {'nvim-lua/plenary.nvim'} }
+  }
 
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins
@@ -126,6 +153,22 @@ require('packer').startup(function(use)
     require('packer').sync()
   end
 end)
+
+-- local builtin = require('telescope.builtin')
+-- vim.keymap.set('n', '<leader>p', builtin.find_files, {})
+-- vim.keymap.set('n', '<leader>f', builtin.live_grep, {})
+-- vim.keymap.set('n', '<leader>b', builtin.buffers, {})
+-- vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+
+-- Copilot -- 
+-- local lspkind = require("lspkind")
+-- lspkind.init({
+--   symbol_map = {
+--     Copilot = "",
+--   },
+-- })
+
+vim.api.nvim_set_hl(0, "CmpItemKindCopilot", {fg ="#6CC644"})
 
 -- TREESITTER --
 require'nvim-treesitter.configs'.setup {
@@ -252,9 +295,38 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
   buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
   buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-  buf_set_keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+  buf_set_keymap("n", "<leader>fm", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
 
 end
+
+-- Setup lspconfig.
+local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+-- Use a loop to conveniently call 'setup' on multiple servers and
+-- map buffer local keybindings when the language server attaches
+local servers = { "ruby_ls", "lua_ls", "ruff_lsp", "sourcekit" }
+for _, lsp in ipairs(servers) do
+  nvim_lsp[lsp].setup {
+    capabilities = capabilities,
+	  on_attach = on_attach,
+	  flags = {
+	    debounce_text_changes = 150,
+	  }
+  }
+end
+
+local rt = require("rust-tools")
+
+rt.setup({
+  server = {
+    on_attach = function(_, bufnr)
+    -- Hover actions
+       --vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
+    -- Code action groups
+       --vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+     end,
+   },
+})
 
 local has_words_before = function()
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
@@ -324,9 +396,11 @@ cmp.setup({
     end, { "i", "s" }),
   }),
   sources = cmp.config.sources({
-    { name = 'nvim_lsp' },
+    { name = "copilot", group_index = 2 },
+    { name = "nvim_lsp", group_index = 2 },
+    { name = "path", group_index = 2 },
+    { name = "luasnip", group_index = 2 },
     -- { name = 'vsnip' }, -- For vsnip users.
-    { name = 'luasnip' }, -- For luasnip users.
     -- { name = 'ultisnips' }, -- For ultisnips users.
     -- { name = 'snippy' }, -- For snippy users.
   }, {
@@ -363,14 +437,4 @@ cmp.setup.cmdline(':', {
   })
 })
 
--- Setup lspconfig.
-local capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
-
--- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
-require('lspconfig')['solargraph'].setup {
-  capabilities = capabilities,
-	on_attach = on_attach,
-}
-
-vim.g.copilot_assume_mapped = true
 
