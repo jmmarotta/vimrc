@@ -1,3 +1,0 @@
-#!/bin/bash
-# copies dotfiles to the home directory from the `.dotfiles` git repo
-find . -name .git -prune -o -type f '(' -name '.*' -o -name '*.lua' ')' -print | gsed 's#./##' | xargs -Ifilepath cp -v filepath ~/filepath
