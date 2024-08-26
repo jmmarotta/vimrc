@@ -1,4 +1,7 @@
 --[[
+-- TODO: Add diffview
+-- TODO: Add avante
+-- TODO: Add in formatters for most common languages I use
 
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
@@ -189,6 +192,10 @@ vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left wind
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+
+-- [[ MiniFiles ]]
+-- Open mini files in a floating window
+vim.keymap.set("n", "<leader>of", "<cmd>:lua MiniFiles.open()<cr>", { desc = "Open MiniFiles in a floating window" })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -723,6 +730,8 @@ require("lazy").setup({
       --  into multiple repos for maintenance purposes.
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-path",
+      "hrsh7th/cmp-cmdline",
+      "hrsh7th/cmp-buffer",
     },
     config = function()
       -- See `:help cmp`
@@ -801,6 +810,25 @@ require("lazy").setup({
           { name = "path" },
         },
       })
+
+      -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+      cmp.setup.cmdline({ "/", "?" }, {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = {
+          { name = "buffer" },
+        },
+      })
+
+      -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+      cmp.setup.cmdline(":", {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = cmp.config.sources({
+          { name = "path" },
+        }, {
+          { name = "cmdline" },
+        }),
+        matching = { disallow_symbol_nonprefix_matching = false },
+      })
     end,
   },
 
@@ -875,6 +903,14 @@ require("lazy").setup({
         return "%2l:%-2v"
       end
 
+      -- MiniFiles
+      local files = require("mini.files")
+      files.setup()
+
+      -- Icons
+      local icons = require("mini.icons")
+      icons.setup()
+
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
@@ -895,6 +931,12 @@ require("lazy").setup({
         "query",
         "vim",
         "vimdoc",
+        "javascript",
+        "typescript",
+        "cpp",
+        "python",
+        "rust",
+        "go",
       },
       -- Autoinstall languages that are not installed
       auto_install = true,
@@ -921,7 +963,6 @@ require("lazy").setup({
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     end,
   },
-  { "echasnovski/mini.nvim", version = "*" },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
@@ -937,6 +978,7 @@ require("lazy").setup({
   require("kickstart.plugins.lint"),
   require("kickstart.plugins.autopairs"),
   require("kickstart.plugins.neo-tree"),
+
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
