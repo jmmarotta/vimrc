@@ -1,6 +1,6 @@
 --[[
 -- TODO: Add diffview
--- TODO: Add avante
+-- TODO: Add avante or aider
 -- TODO: Add in formatters for most common languages I use
 
 =====================================================================
@@ -192,10 +192,6 @@ vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left wind
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
-
--- [[ MiniFiles ]]
--- Open mini files in a floating window
-vim.keymap.set("n", "<leader>of", "<cmd>:lua MiniFiles.open()<cr>", { desc = "Open MiniFiles in a floating window" })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -913,6 +909,7 @@ require("lazy").setup({
       local icons = require("mini.icons")
       icons.setup()
 
+      vim.keymap.set("n", "<leader>fo", "<cmd>:lua MiniFiles.open()<cr>", { desc = "[F]iletree [O]pen" })
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
@@ -965,6 +962,25 @@ require("lazy").setup({
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     end,
   },
+  -- {
+  --   "joshuavial/aider.nvim",
+  --   config = function()
+  --     require("aider").setup({
+  --       auto_manage_context = true,
+  --       default_bindings = false,
+  --     })
+
+  --     function ReloadBuffer()
+  --       local temp_sync_value = vim.g.aider_buffer_sync
+  --       vim.g.aider_buffer_sync = 0
+  --       vim.api.nvim_exec2("e!", { output = false })
+  --       vim.g.aider_buffer_sync = temp_sync_value
+  --     end
+
+  --     vim.keymap.set("n", "<leader>ao", "<cmd>lua AiderOpen(-3)<cr>", { desc = "[A]ider [O]pen" })
+  --     vim.keymap.set("n", "<leader>ar", "<cmd>lua ReloadBuffer()<cr>", { desc = "[A]ider [R]eload" })
+  --   end,
+  -- },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
