@@ -117,6 +117,7 @@ export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 
 export PATH="$HOME/bin:$PATH"
 export PATH="/Users/julianmarotta/Library/Python/3.9/bin:$PATH"
+export PATH="/Users/julianmarotta/.local/bin:$PATH"
 
 alias nv="nvim"
 alias vi="nvim"
@@ -135,3 +136,9 @@ export DISPLAY=:0
 export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+# Add private variables to .private_variables
+if [ -f ~/.private_variables ]; then                                                                               
+  . ~/.private_variables                                                                                         
+fi
+
