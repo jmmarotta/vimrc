@@ -1,6 +1,5 @@
 --[[
 -- TODO: Add diffview
--- TODO: Add avante or aider
 -- TODO: Add in formatters for most common languages I use
 
 =====================================================================
@@ -586,6 +585,10 @@ require("lazy").setup({
         prettierd = {},
         eslint_d = {},
         --
+        rubocop = {},
+        solargraph = {},
+
+        markdownlint = {},
 
         lua_ls = {
           -- cmd = {...},
@@ -660,7 +663,7 @@ require("lazy").setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
+        local disable_filetypes = { c = true, cpp = true, markdown = true }
         return {
           timeout_ms = 500,
           lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
@@ -673,12 +676,13 @@ require("lazy").setup({
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
-        javascript = { "prettier" },
-        typescript = { "prettier" },
+        javascript = { "prettierd", "eslint_d" },
+        typescript = { "prettierd", "eslint_d" },
+        ruby = { "rubocop" },
       },
       formatters = {
         stylua = {
-          prepend_args = { "--indent-type", "Spaces", "--indent-width", "4" },
+          prepend_args = { "--indent-type", "Spaces", "--indent-width", "2" },
         },
       },
     },
@@ -871,6 +875,10 @@ require("lazy").setup({
   { -- Collection of various small independent plugins/modules
     "echasnovski/mini.nvim",
     config = function()
+      -- Icons
+      local icons = require("mini.icons")
+      icons.setup()
+
       -- Better Around/Inside textobjects
       --
       -- Examples:
@@ -904,10 +912,6 @@ require("lazy").setup({
       -- MiniFiles
       local files = require("mini.files")
       files.setup()
-
-      -- Icons
-      local icons = require("mini.icons")
-      icons.setup()
 
       vim.keymap.set("n", "<leader>fo", "<cmd>:lua MiniFiles.open()<cr>", { desc = "[F]iletree [O]pen" })
       -- ... and there is more!
@@ -1045,13 +1049,29 @@ require("lazy").setup({
       --},
     },
     dependencies = {
-      --"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-      "echasnovski/mini.icons",
       "stevearc/dressing.nvim",
       "nvim-lua/plenary.nvim",
       "MunifTanjim/nui.nvim",
-      --- The below is optional, make sure to setup it properly if you have lazy=true
+      --- The below dependencies are optional,
+      "nvim-tree/nvim-web-devicons",
+      "echasnovski/mini.icons",
       {
+        -- support for image pasting
+        "HakonHarnes/img-clip.nvim",
+        event = "VeryLazy",
+        opts = {
+          -- recommended settings
+          default = {
+            embed_image_as_base64 = false,
+            prompt_for_file_name = false,
+            drag_and_drop = {
+              insert_mode = true,
+            },
+          },
+        },
+      },
+      {
+        -- Make sure to setup it properly if you have lazy=true
         "MeanderingProgrammer/render-markdown.nvim",
         opts = {
           file_types = { "markdown", "Avante" },
@@ -1075,8 +1095,7 @@ require("lazy").setup({
   require("kickstart.plugins.lint"),
   require("kickstart.plugins.autopairs"),
   require("kickstart.plugins.neo-tree"),
-
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  -- require('kickstart.plugins.gitsigns'), -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
