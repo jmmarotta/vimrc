@@ -160,3 +160,6 @@ tmux9() {
   # Attach to the session
   tmux attach-session -t ts 
 }
+
+alias nvc="nvim ~/.config/nvim/init.lua"
+
