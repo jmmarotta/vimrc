@@ -147,3 +147,16 @@ if [ -f ~/.private_variables ]; then
   . ~/.private_variables                                                                                         
 fi
 
+tmux9() {
+  # Start a new tmux session with window 0
+  tmux new-session -d -s ts
+  
+  # Create 9 additional windows (1-9)
+  for i in {1..9}
+  do
+      tmux new-window -t ts
+  done
+  
+  # Attach to the session
+  tmux attach-session -t ts 
+}
