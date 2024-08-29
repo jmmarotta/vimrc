@@ -678,7 +678,7 @@ require("lazy").setup({
       },
       formatters = {
         stylua = {
-          prepend_args = { "--indent-type", "Spaces", "--indent-width", "2" },
+          prepend_args = { "--indent-type", "Spaces", "--indent-width", "4" },
         },
       },
     },
