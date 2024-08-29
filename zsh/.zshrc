@@ -115,6 +115,7 @@ export PATH=$PATH:$GOPATH/bin
 export PATH=$PATH:$GOROOT/bin
 export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 
+# Python
 export PATH="$HOME/bin:$PATH"
 export PATH="/Users/julianmarotta/Library/Python/3.9/bin:$PATH"
 export PATH="/Users/julianmarotta/.local/bin:$PATH"
@@ -124,6 +125,7 @@ alias vi="nvim"
 alias vim="nvim"
 export EDITOR="nvim"
 alias sed="gsed"
+alias xargs="gxargs"
 
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 if command -v pyenv 1>/dev/null 2>&1; then
@@ -136,6 +138,9 @@ export DISPLAY=:0
 export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
+source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
 
 # Add private variables to .private_variables
 if [ -f ~/.private_variables ]; then                                                                               
