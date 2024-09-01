@@ -287,6 +287,8 @@ require("lazy").setup({
         { "<leader>s", group = "[S]earch" },
         { "<leader>w", group = "[W]orkspace" },
         { "<leader>t", group = "[T]oggle" },
+        { "<leader>f", group = "[F]iletree", mode = { "n" } },
+        { "<leader>a", group = "[A]vante", mode = { "n", "v" } },
         { "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
       })
     end,
@@ -345,7 +347,11 @@ require("lazy").setup({
 
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
-      require("telescope").setup({
+      local telescope = require("telescope")
+      pcall(telescope.load_extension, "fzf")
+      pcall(telescope.load_extension, "ui-select")
+      -- pcall(telescope.load_extension, "buffers")
+      telescope.setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
@@ -354,7 +360,13 @@ require("lazy").setup({
         --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
         --   },
         -- },
-        -- pickers = {}
+        -- pickers = {
+        --   buffers = {
+        --     sort_mru = true,
+        --     sort_lastused = true,
+        --     show_all_buffers = true,
+        --   },
+        -- },
         extensions = {
           ["ui-select"] = {
             require("telescope.themes").get_dropdown(),
@@ -363,8 +375,9 @@ require("lazy").setup({
       })
 
       -- Enable Telescope extensions if they are installed
-      pcall(require("telescope").load_extension, "fzf")
-      pcall(require("telescope").load_extension, "ui-select")
+      -- pcall(require("telescope").load_extension, "fzf")
+      -- pcall(require("telescope").load_extension, "ui-select")
+      -- pcall(require("telescope").load_extension, "buffers")
 
       -- See `:help telescope.builtin`
       local builtin = require("telescope.builtin")
@@ -581,10 +594,13 @@ require("lazy").setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
+        -- typescript
         tsserver = {},
+        -- TODO: need to check for what typescript tools to use
         prettierd = {},
         eslint_d = {},
-        --
+
+        -- ruby
         rubocop = {},
         solargraph = {},
 
@@ -676,9 +692,8 @@ require("lazy").setup({
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
-        javascript = { "prettierd", "eslint_d" },
-        typescript = { "prettierd", "eslint_d" },
-        ruby = { "rubocop" },
+        javascript = { "prettierd" },
+        typescript = { "prettierd" },
       },
       formatters = {
         stylua = {
@@ -914,6 +929,12 @@ require("lazy").setup({
       files.setup()
 
       vim.keymap.set("n", "<leader>fo", "<cmd>:lua MiniFiles.open()<cr>", { desc = "[F]iletree [O]pen" })
+      vim.keymap.set(
+        "n",
+        "<leader>fd",
+        "<cmd>:lua MiniFiles.open(vim.fn.expand('%:p:h'))<cr>",
+        { desc = "[F]iletree open working [D]irectory" }
+      )
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
@@ -940,6 +961,7 @@ require("lazy").setup({
         "python",
         "rust",
         "go",
+        "ruby",
       },
       -- Autoinstall languages that are not installed
       auto_install = true,
