@@ -93,7 +93,8 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+-- brew search '/font-.*-nerd-font/' | awk '{ print $1 }' | xargs brew install --cask
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -1010,7 +1011,6 @@ require("lazy").setup({
   {
     "yetone/avante.nvim",
     event = "VeryLazy",
-    build = "make", -- This is Optional, only if you want to use tiktoken_core to calculate tokens count
     opts = {
       -- add any opts here
       --provider = "claude",
@@ -1070,6 +1070,7 @@ require("lazy").setup({
       --  list_opener = "copen",
       --},
     },
+    build = ":AvanteBuild source=false",
     dependencies = {
       "stevearc/dressing.nvim",
       "nvim-lua/plenary.nvim",
