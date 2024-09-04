@@ -1,6 +1,7 @@
 --[[
 -- TODO: Add diffview
 -- TODO: Add in formatters for most common languages I use
+-- TODO: Fix this by setting the version for 2.7 rubocop and solargraph
 
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
@@ -93,7 +94,8 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+-- brew search '/font-.*-nerd-font/' | awk '{ print $1 }' | xargs brew install --cask
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -300,7 +302,6 @@ require("lazy").setup({
   -- you do for a plugin at the top level, you can do for a dependency.
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
-
   { -- Fuzzy Finder (files, lsp, etc)
     "nvim-telescope/telescope.nvim",
     event = "VimEnter",
@@ -323,7 +324,13 @@ require("lazy").setup({
       { "nvim-telescope/telescope-ui-select.nvim" },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { "nvim-tree/nvim-web-devicons", enabled = vim.g.have_nerd_font },
+      {
+        "nvim-tree/nvim-web-devicons",
+        enabled = vim.g.have_nerd_font,
+        config = function()
+          require("nvim-web-devicons").setup()
+        end,
+      },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -893,6 +900,7 @@ require("lazy").setup({
       -- Icons
       local icons = require("mini.icons")
       icons.setup()
+      MiniIcons.mock_nvim_web_devicons()
 
       -- Better Around/Inside textobjects
       --
@@ -1010,73 +1018,21 @@ require("lazy").setup({
   {
     "yetone/avante.nvim",
     event = "VeryLazy",
-    build = "make", -- This is Optional, only if you want to use tiktoken_core to calculate tokens count
+    lazy = false,
     opts = {
       -- add any opts here
-      --provider = "claude",
-      --claude = {
-      --  endpoint = "https://api.anthropic.com",
-      --  model = "claude-3-5-sonnet-20240620",
-      --  temperature = 0,
-      --  max_tokens = 4096,
-      --},
-      --mappings = {
-      --  ask = "<leader>aa",
-      --  edit = "<leader>ae",
-      --  refresh = "<leader>ar",
-      --  --- @class AvanteConflictMappings
-      --  diff = {
-      --    ours = "co",
-      --    theirs = "ct",
-      --    none = "c0",
-      --    both = "cb",
-      --    next = "]x",
-      --    prev = "[x",
-      --  },
-      --  jump = {
-      --    next = "]]",
-      --    prev = "[[",
-      --  },
-      --  submit = {
-      --    normal = "<CR>",
-      --    insert = "<C-s>",
-      --  },
-      --  toggle = {
-      --    debug = "<leader>ad",
-      --    hint = "<leader>ah",
-      --  },
-      --},
-      --hints = { enabled = true },
-      --windows = {
-      --  wrap = true, -- similar to vim.o.wrap
-      --  width = 30, -- default % based on available width
-      --  sidebar_header = {
-      --    align = "center", -- left, center, right for title
-      --    rounded = true,
-      --  },
-      --},
-      --highlights = {
-      --  ---@type AvanteConflictHighlights
-      --  diff = {
-      --    current = "DiffText",
-      --    incoming = "DiffAdd",
-      --  },
-      --},
-      ----- @class AvanteConflictUserConfig
-      --diff = {
-      --  debug = false,
-      --  autojump = true,
-      --  ---@type string | fun(): any
-      --  list_opener = "copen",
-      --},
     },
+    -- if you want to download pre-built binary, then pass source=false. Make sure to follow instruction above.
+    -- Also note that downloading prebuilt binary is a lot faster comparing to compiling from source.
+    build = ":AvanteBuild source=false",
     dependencies = {
       "stevearc/dressing.nvim",
       "nvim-lua/plenary.nvim",
       "MunifTanjim/nui.nvim",
       --- The below dependencies are optional,
-      "nvim-tree/nvim-web-devicons",
+      "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
       "echasnovski/mini.icons",
+      "zbirenbaum/copilot.lua", -- for providers='copilot'
       {
         -- support for image pasting
         "HakonHarnes/img-clip.nvim",
@@ -1089,11 +1045,13 @@ require("lazy").setup({
             drag_and_drop = {
               insert_mode = true,
             },
+            -- required for Windows users
+            use_absolute_path = true,
           },
         },
       },
       {
-        -- Make sure to setup it properly if you have lazy=true
+        -- Make sure to set this up properly if you have lazy=true
         "MeanderingProgrammer/render-markdown.nvim",
         opts = {
           file_types = { "markdown", "Avante" },
