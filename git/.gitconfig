@@ -1,0 +1,28 @@
+[user]
+	name = ### YOUR NAME ###
+	email = ### YOUR EMAIL ###
+[init]
+	defaultBranch = main
+[core]
+	editor = nvim
+	pager = delta
+[color]
+	ui = auto
+[push]
+	default = simple
+[pull]
+	rebase = true
+[commit]
+	gpgsign = false
+[hub]
+	protocol = ssh
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true    # use n and N to move between diff sections
+	line-numbers = true
+	side-by-side = true
+[merge]
+	conflictstyle = diff3
+[diff]
+	colorMoved = default
