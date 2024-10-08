@@ -8,3 +8,8 @@ https://gist.github.com/andreibosco/cb8506780d0942a712fc
 stow nvim zsh tmux
 ```
 
+# TODO
+
+need to add this:
+brew install coreutils ed findutils gawk gnu-sed gnu-tar grep make
+
