@@ -194,6 +194,35 @@ vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right win
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
 
+-- [[ Open Full Line Errors ]]
+vim.keymap.set(
+  "n",
+  "<leader>el",
+  '<cmd>lua vim.diagnostic.open_float(0, {scope="line"})<cr>',
+  { desc = "[E]rror [L]ine" }
+)
+
+function YankFloatContent()
+  local float_wins = vim.tbl_filter(function(win)
+    return vim.api.nvim_win_get_config(win).relative ~= ""
+  end, vim.api.nvim_list_wins())
+
+  if #float_wins == 0 then
+    print("No floating windows found")
+    return
+  end
+
+  local win = float_wins[1]
+  local buf = vim.api.nvim_win_get_buf(win)
+  local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+  local content = table.concat(lines, "\n")
+
+  vim.fn.setreg("+", content)
+  print("Floating window content copied to clipboard")
+end
+
+vim.keymap.set("n", "<leader>yf", YankFloatContent, { desc = "[Y]ank [F]loating Window" })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -233,6 +262,10 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require("lazy").setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
+
+  -- run the following command to see what the default is
+  -- :verbose set shiftwidth?
+  -- to run Sleuth, type :Sleuth
   "tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
 
   -- NOTE: Plugins can also be added by using a table,
@@ -602,14 +635,14 @@ require("lazy").setup({
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
         -- typescript
-        tsserver = {},
+        -- tsserver = {},
         -- TODO: need to check for what typescript tools to use
         prettierd = {},
         eslint_d = {},
 
         -- ruby
-        rubocop = {},
-        solargraph = {},
+        -- rubocop = {},
+        -- solargraph = {},
 
         markdownlint = {},
 
@@ -642,6 +675,7 @@ require("lazy").setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         "stylua", -- Used to format Lua code
+        "ruff", -- Used to lint Python code
       })
       require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -1106,4 +1140,4 @@ require("lazy").setup({
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
+-- MODELINE IS LIKE THIS: `vim: ts=2 sts=2 sw=2 et`
