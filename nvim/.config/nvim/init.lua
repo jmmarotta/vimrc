@@ -642,7 +642,7 @@ require("lazy").setup({
 
         -- ruby
         -- rubocop = {},
-        -- solargraph = {},
+        solargraph = {},
 
         markdownlint = {},
 
