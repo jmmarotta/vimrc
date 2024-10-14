@@ -1,0 +1,4 @@
+model: claude
+clients:
+- type: claude
+  model: claude-3-5-sonnet-20240620

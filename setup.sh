@@ -33,11 +33,12 @@ mise install
 # install rustup
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
-# install cht.sh
-PATH_DIR="$HOME/bin"  # or another directory on your $PATH
-mkdir -p "$PATH_DIR"
-curl https://cht.sh/:cht.sh > "$PATH_DIR/cht.sh"
-chmod +x "$PATH_DIR/cht.sh"
+# if file does not exist for .private_variables, create it
+if [ ! -f $HOME/.private_variables ]; then
+    echo "export ANTHROPIC_API_KEY=YOUR_API_KEY" > $HOME/.private_variables
+    echo "export CLAUDE_API_KEY=\$(echo \$ANTHROPIC_API_KEY)" >> $HOME/.private_variables
+    echo "export OPENAI_API_KEY=YOUR_API_KEY" >> $HOME/.private_variables
+fi
 
 echo "1. install docker desktop:"
 echo "https://docs.docker.com/desktop/install"

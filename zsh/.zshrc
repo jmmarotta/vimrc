@@ -1,5 +1,5 @@
 # If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Install with sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 # Path to your oh-my-zsh installation.
@@ -224,3 +224,7 @@ eval "$(/opt/homebrew/bin/mise activate zsh)"
 # zoxide
 eval "$(zoxide init zsh)"
 alias cd=z
+
+# aichat
+export AICHAT_CONFIG_PATH=$HOME/.config/aichat
+export AICHAT_CONFIG_FILE=$AICHAT_CONFIG_PATH/config.yaml
