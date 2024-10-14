@@ -1,0 +1,6 @@
+[tools]
+ruby = "3.3"
+python = "3.12"
+node = "22"
+go = "1.23"
+zig = "0.13"
