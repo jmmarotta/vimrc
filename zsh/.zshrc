@@ -104,40 +104,25 @@ source $ZSH/oh-my-zsh.sh
 # add cargo (rust) to path
 export PATH=$HOME/.cargo/bin:$PATH
 
-# rbenv
-eval "$(rbenv init -)"
-export PATH="$HOME/.rbenv/bin:$PATH"
-
-# golang
-export GOPATH=$HOME/go-workspace
-export GOROOT=/usr/local/opt/go/libexec
-export PATH=$PATH:$GOPATH/bin
-export PATH=$PATH:$GOROOT/bin
-export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
-
-# Python
-export PATH="$HOME/bin:$PATH"
-export PATH="/Users/julianmarotta/Library/Python/3.9/bin:$PATH"
-export PATH="/Users/julianmarotta/.local/bin:$PATH"
+export PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
+# export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
+# export PATH="/opt/homebrew/opt/findutils/libexec/gnubin:$PATH"
+export PATH="/opt/homebrew/opt/ed/libexec/gnubin:$PATH"
+export PATH="/opt/homebrew/opt/gawk/libexec/gnubin:$PATH"
+export PATH="/opt/homebrew/opt/grep/libexec/gnubin:$PATH"
+export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+export PATH="/opt/homebrew/opt/gnu-tar/libexec/gnubin:$PATH"
 
 alias nv="nvim"
 alias vi="nvim"
 alias vim="nvim"
 export EDITOR="nvim"
-alias sed="gsed"
-alias xargs="gxargs"
-
-export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
-fi
+# alias sed="gsed"
+# alias xargs="gxargs"
+# alias awk="gawk"
 
 export PATH="/usr/X11/bin:$PATH"
 export DISPLAY=:0
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
 source "$(brew --prefix)/share/google-cloud-sdk/path.zsh.inc"
 source "$(brew --prefix)/share/google-cloud-sdk/completion.zsh.inc"
@@ -232,3 +217,10 @@ elif type compctl &>/dev/null; then
   compctl -K _npm_completion npm
 fi
 ###-end-npm-completion-###
+
+# mise
+eval "$(/opt/homebrew/bin/mise activate zsh)"
+
+# zoxide
+eval "$(zoxide init zsh)"
+alias cd=z
