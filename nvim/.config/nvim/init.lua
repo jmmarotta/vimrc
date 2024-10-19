@@ -974,7 +974,7 @@ require("lazy").setup({
       vim.keymap.set(
         "n",
         "<leader>fd",
-        "<cmd>:lua MiniFiles.open(vim.fn.expand('%:p:h'))<cr>",
+        "<cmd>:lua MiniFiles.open(vim.fn.fnamemodify(vim.fn.bufname(), ':p:h'))<cr>",
         { desc = "[F]iletree open working [D]irectory" }
       )
       -- ... and there is more!
@@ -1004,6 +1004,7 @@ require("lazy").setup({
         "rust",
         "go",
         "ruby",
+        "sql",
       },
       -- Autoinstall languages that are not installed
       auto_install = true,

@@ -228,3 +228,4 @@ alias cd=z
 # aichat
 export AICHAT_CONFIG_PATH=$HOME/.config/aichat
 export AICHAT_CONFIG_FILE=$AICHAT_CONFIG_PATH/config.yaml
+alias aic=aichat
