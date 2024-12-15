@@ -25,3 +25,5 @@ stow nvim zsh tmux mise
 need to add this:
 brew install coreutils ed findutils gawk gnu-sed gnu-tar grep make
 
+# Claude
+https://github.com/docker/mcp-servers
