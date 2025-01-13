@@ -1,7 +1,5 @@
 --[[
 -- TODO: Add diffview
--- TODO: Add in formatters for most common languages I use
--- TODO: Fix this by setting the version for 2.7 rubocop and solargraph
 
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
@@ -747,7 +745,13 @@ require("lazy").setup({
   {
     "supermaven-inc/supermaven-nvim",
     config = function()
-      require("supermaven-nvim").setup({})
+      require("supermaven-nvim").setup({
+        keymaps = {
+          accept_suggestion = "<C-j>",
+          clear_suggestion = "<C-]>",
+          accept_word = "<C-'>",
+        },
+      })
     end,
   },
 
@@ -1031,27 +1035,9 @@ require("lazy").setup({
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     end,
   },
-  -- {
-  --   "joshuavial/aider.nvim",
-  --   config = function()
-  --     require("aider").setup({
-  --       auto_manage_context = true,
-  --       default_bindings = false,
-  --     })
-
-  --     function ReloadBuffer()
-  --       local temp_sync_value = vim.g.aider_buffer_sync
-  --       vim.g.aider_buffer_sync = 0
-  --       vim.api.nvim_exec2("e!", { output = false })
-  --       vim.g.aider_buffer_sync = temp_sync_value
-  --     end
-
-  --     vim.keymap.set("n", "<leader>ao", "<cmd>lua AiderOpen(-3)<cr>", { desc = "[A]ider [O]pen" })
-  --     vim.keymap.set("n", "<leader>ar", "<cmd>lua ReloadBuffer()<cr>", { desc = "[A]ider [R]eload" })
-  --   end,
-  -- },
   {
     "yetone/avante.nvim",
+    enabled = false,
     event = "VeryLazy",
     lazy = false,
     opts = {
@@ -1094,6 +1080,36 @@ require("lazy").setup({
         ft = { "markdown", "Avante" },
       },
     },
+  },
+  {
+    "olimorris/codecompanion.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    opts = {
+      strategies = {
+        -- Change the default chat adapter
+        chat = {
+          adapter = "anthropic",
+        },
+      },
+      opts = {
+        -- Set debug logging
+        log_level = "DEBUG",
+      },
+    },
+  },
+  {
+    dir = "~/projects/reapo.nvim",
+    lazy = false,
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      require("reapo").setup({
+        model = "claude-3-5-sonnet-20241022",
+        window_style = "float", -- or "split"
+      })
+    end,
   },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
