@@ -148,7 +148,7 @@ tmux9() {
 
 alias nvc="nvim ~/.config/nvim/init.lua"
 
-alias aicp="git ls-files | while read file; do echo "=== $file ==="; cat "$file"; echo; done | pbcopy"
+alias aicp="git ls-files | while read file; do echo \"=== $file ===\"; cat \"$file\"; echo; done | pbcopy"
 
 ###-begin-npm-completion-###
 #
@@ -221,7 +221,7 @@ fi
 ###-end-npm-completion-###
 
 # mise
-eval "$(/opt/homebrew/bin/mise activate zsh)"
+eval "$(mise activate zsh)"
 
 # zoxide
 eval "$(zoxide init zsh)"
