@@ -382,6 +382,23 @@ require("lazy").setup({
       -- This opens a window that shows you all of the keymaps for the current
       -- Telescope picker. This is really useful to discover what Telescope can
       -- do as well as how to actually do it!
+      --
+      -- [[ Select multiple files ]]
+
+      local select_one_or_multi = function(prompt_bufnr)
+        local picker = require("telescope.actions.state").get_current_picker(prompt_bufnr)
+        local multi = picker:get_multi_selection()
+        if not vim.tbl_isempty(multi) then
+          require("telescope.actions").close(prompt_bufnr)
+          for _, j in pairs(multi) do
+            if j.path ~= nil then
+              vim.cmd(string.format("%s %s", "edit", j.path))
+            end
+          end
+        else
+          require("telescope.actions").select_default(prompt_bufnr)
+        end
+      end
 
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
@@ -393,11 +410,14 @@ require("lazy").setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          mappings = {
+            -- i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+            i = {
+              ["<CR>"] = select_one_or_multi,
+            },
+          },
+        },
         -- pickers = {
         --   buffers = {
         --     sort_mru = true,
@@ -630,19 +650,24 @@ require("lazy").setup({
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
+        --    https://github.com/yioneko/vtsls
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
         -- typescript
-        -- tsserver = {},
+        ts_ls = {},
         -- TODO: need to check for what typescript tools to use
-        prettierd = {},
-        eslint_d = {},
+        -- prettierd = {},
+        -- eslint_d = {},
+        biome = {},
 
         -- ruby
         -- rubocop = {},
-        solargraph = {},
+        standardrb = {},
+        -- solargraph = {},
 
         markdownlint = {},
+
+        terraformls = {},
 
         lua_ls = {
           -- cmd = {...},
@@ -674,6 +699,7 @@ require("lazy").setup({
       vim.list_extend(ensure_installed, {
         "stylua", -- Used to format Lua code
         "ruff", -- Used to lint Python code
+        "biome",
       })
       require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -692,26 +718,25 @@ require("lazy").setup({
     end,
   },
 
-  {
-    "pmizio/typescript-tools.nvim",
-    dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
-    opts = {},
-  },
+  -- {
+  --   "pmizio/typescript-tools.nvim",
+  --   dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+  --   opts = {},
+  --   enabled = true,
+  -- },
 
   { -- Autoformat
     "stevearc/conform.nvim",
-    event = { "BufWritePre" },
-    cmd = { "ConformInfo" },
-    keys = {
-      {
-        "<leader>f",
-        function()
-          require("conform").format({ async = true, lsp_fallback = true })
-        end,
-        mode = "",
-        desc = "[F]ormat buffer",
-      },
-    },
+    -- keys = {
+    --   -- {
+    --   --   "<leader>f",
+    --   --   function()
+    --   --     require("conform").format({ async = true, lsp_fallback = true })
+    --   --   end,
+    --   --   mode = "",
+    --   --   desc = "[F]ormat buffer",
+    --   -- },
+    -- },
     opts = {
       notify_on_error = false,
       format_on_save = function(bufnr)
@@ -731,8 +756,8 @@ require("lazy").setup({
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
-        javascript = { "prettierd" },
-        typescript = { "prettierd" },
+        javascript = { "biome" },
+        typescript = { "biome" },
       },
       formatters = {
         stylua = {
@@ -1094,11 +1119,13 @@ require("lazy").setup({
           adapter = "anthropic",
         },
       },
-      opts = {
-        -- Set debug logging
-        log_level = "DEBUG",
-      },
+      -- Set debug logging
+      log_level = "DEBUG",
     },
+    init = function()
+      vim.keymap.set("n", "<leader>cc", "<cmd>CodeCompanion<cr>", { noremap = true, silent = true })
+      vim.keymap.set("n", "<leader>cs", "<cmd>CodeCompanionChat<cr>", { noremap = true, silent = true })
+    end,
   },
   {
     dir = "~/projects/reapo.nvim",
