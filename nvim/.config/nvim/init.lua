@@ -383,6 +383,23 @@ require("lazy").setup({
       -- Telescope picker. This is really useful to discover what Telescope can
       -- do as well as how to actually do it!
 
+      -- [[ Select multiple files ]]
+
+      local select_one_or_multi = function(prompt_bufnr)
+        local picker = require("telescope.actions.state").get_current_picker(prompt_bufnr)
+        local multi = picker:get_multi_selection()
+        if not vim.tbl_isempty(multi) then
+          require("telescope.actions").close(prompt_bufnr)
+          for _, j in pairs(multi) do
+            if j.path ~= nil then
+              vim.cmd(string.format("%s %s", "edit", j.path))
+            end
+          end
+        else
+          require("telescope.actions").select_default(prompt_bufnr)
+        end
+      end
+
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
       local telescope = require("telescope")
@@ -393,11 +410,14 @@ require("lazy").setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          mappings = {
+            -- i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+            i = {
+              ["<CR>"] = select_one_or_multi,
+            },
+          },
+        },
         -- pickers = {
         --   buffers = {
         --     sort_mru = true,
@@ -622,9 +642,19 @@ require("lazy").setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
+        -- c
         clangd = {},
+
+        -- zig
+        zls = {},
+
+        -- go
         -- gopls = {},
+
+        -- python
         pyright = {},
+
+        -- rust
         rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -632,18 +662,20 @@ require("lazy").setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
+
         -- typescript
-        -- tsserver = {},
-        -- TODO: need to check for what typescript tools to use
-        prettierd = {},
-        eslint_d = {},
+        -- ts_ls = {},
+        vtsls = {},
 
         -- ruby
         -- rubocop = {},
-        solargraph = {},
+        -- solargraph = {},
+        -- standardrb = {},
 
-        markdownlint = {},
+        -- terraform
+        terraformls = {},
 
+        -- lua
         lua_ls = {
           -- cmd = {...},
           -- filetypes = { ...},
@@ -674,6 +706,11 @@ require("lazy").setup({
       vim.list_extend(ensure_installed, {
         "stylua", -- Used to format Lua code
         "ruff", -- Used to lint Python code
+        "zls", -- Used to lint Zig code
+        "eslint_d", -- Used to lint typescript
+        "prettierd", -- Used to format javascript/typescript
+        "biome", -- Used to format/lint javascript/typescript
+        "markdownlint", -- Used to lint markdown
       })
       require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -692,26 +729,20 @@ require("lazy").setup({
     end,
   },
 
-  {
-    "pmizio/typescript-tools.nvim",
-    dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
-    opts = {},
-  },
-
   { -- Autoformat
     "stevearc/conform.nvim",
     event = { "BufWritePre" },
     cmd = { "ConformInfo" },
-    keys = {
-      {
-        "<leader>f",
-        function()
-          require("conform").format({ async = true, lsp_fallback = true })
-        end,
-        mode = "",
-        desc = "[F]ormat buffer",
-      },
-    },
+    -- keys = {
+    --   {
+    --     "<leader>f",
+    --     function()
+    --       require("conform").format({ async = true, lsp_fallback = true })
+    --     end,
+    --     mode = "",
+    --     desc = "[F]ormat buffer",
+    --   },
+    -- },
     opts = {
       notify_on_error = false,
       format_on_save = function(bufnr)
@@ -729,10 +760,10 @@ require("lazy").setup({
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
+        python = { "ruff" },
         -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
-        javascript = { "prettierd" },
-        typescript = { "prettierd" },
+        javascript = { "biome", "prettierd", "prettier", stop_after_first = true },
+        typescript = { "biome", "prettierd", "prettier", stop_after_first = true },
       },
       formatters = {
         stylua = {
@@ -1106,17 +1137,20 @@ require("lazy").setup({
       )
     end,
   },
-  {
-    dir = "~/projects/reapo.nvim",
-    lazy = false,
-    dependencies = { "nvim-lua/plenary.nvim" },
-    config = function()
-      require("reapo").setup({
-        model = "claude-3-5-sonnet-20241022",
-        window_style = "float", -- or "split"
-      })
-    end,
-  },
+
+  -- example of loading a local plugin
+  -- {
+  --   dir = "~/projects/reapo.nvim",
+  --   enabled = false,
+  --   lazy = false,
+  --   dependencies = { "nvim-lua/plenary.nvim" },
+  --   config = function()
+  --     require("reapo").setup({
+  --       model = "claude-3-5-sonnet-20241022",
+  --       window_style = "float", -- or "split"
+  --     })
+  --   end,
+  -- },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
