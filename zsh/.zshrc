@@ -104,6 +104,9 @@ source $ZSH/oh-my-zsh.sh
 # add cargo (rust) to path
 export PATH=$HOME/.cargo/bin:$PATH
 
+# add bun to path
+export PATH=$HOME/.bun/bin:$PATH
+
 export PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
 # export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
 # export PATH="/opt/homebrew/opt/findutils/libexec/gnubin:$PATH"
