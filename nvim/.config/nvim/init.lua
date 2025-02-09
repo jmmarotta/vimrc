@@ -1117,11 +1117,15 @@ require("lazy").setup({
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
+      "j-hui/fidget.nvim",
     },
     opts = {
       strategies = {
         -- Change the default chat adapter
         chat = {
+          adapter = "anthropic",
+        },
+        inline = {
           adapter = "anthropic",
         },
       },
@@ -1135,6 +1139,7 @@ require("lazy").setup({
         "<CMD>CodeCompanionChat<CR>",
         { desc = "[C]ode Companion [V]ertical Split Chat" }
       )
+      require("plugins.codecompanion.fidget-spinner"):init()
     end,
   },
 
