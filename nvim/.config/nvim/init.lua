@@ -417,6 +417,7 @@ require("lazy").setup({
             -- i = { ['<c-enter>'] = 'to_fuzzy_refine' },
             i = {
               ["<CR>"] = select_one_or_multi,
+              ["<C-h>"] = "which_key",
             },
           },
         },
@@ -625,7 +626,7 @@ require("lazy").setup({
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [E]xecute Action")
+          map("<leader>ce", vim.lsp.buf.code_action, "[C]ode [E]xecute Action")
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
@@ -1160,6 +1161,12 @@ require("lazy").setup({
     },
   },
   {
+    "MeanderingProgrammer/render-markdown.nvim",
+    opts = {
+      file_types = { "markdown", "codecompanion" },
+    },
+  },
+  {
     "olimorris/codecompanion.nvim",
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -1172,23 +1179,22 @@ require("lazy").setup({
         chat = {
           adapter = "anthropic",
           slash_commands = {
-            -- Back to default because telescope multiselect opens file instead of providing context
-            -- ["file"] = {
-            --   callback = "strategies.chat.slash_commands.file",
-            --   description = "Select a file using Telescope",
-            --   opts = {
-            --     provider = "telescope", -- Other options include 'default', 'mini_pick', 'fzf_lua', snacks
-            --     contains_code = true,
-            --   },
-            -- },
-            -- ["buffer"] = {
-            --   callback = "strategies.chat.slash_commands.buffer",
-            --   description = "Select a buffer using Telescope",
-            --   opts = {
-            --     provider = "telescope",
-            --     contains_code = true,
-            --   },
-            -- },
+            ["file"] = {
+              callback = "strategies.chat.slash_commands.file",
+              description = "Select a file using Telescope",
+              opts = {
+                provider = "telescope", -- Other options include 'default', 'mini_pick', 'fzf_lua', snacks
+                contains_code = true,
+              },
+            },
+            ["buffer"] = {
+              callback = "strategies.chat.slash_commands.buffer",
+              description = "Select a buffer using Telescope",
+              opts = {
+                provider = "telescope",
+                contains_code = true,
+              },
+            },
           },
         },
         inline = {
@@ -1208,14 +1214,39 @@ require("lazy").setup({
       log_level = "DEBUG",
     },
     init = function()
-      vim.keymap.set("n", "<leader>cc", "<CMD>CodeCompanion<CR>", { desc = "[C]ode [C]ompanion" })
+      require("plugins.codecompanion.fidget-spinner"):init()
+      vim.keymap.set(
+        { "n", "v" },
+        "<leader>ca",
+        "<cmd>CodeCompanionActions<cr>",
+        { noremap = true, silent = true, desc = "[C]ode [C]ompanion Actions" }
+      )
       vim.keymap.set(
         "n",
         "<leader>cv",
-        "<CMD>CodeCompanionChat<CR>",
+        "<CMD>CodeCompanionChat Toggle<CR>",
         { desc = "[C]ode Companion [V]ertical Split Chat" }
       )
-      require("plugins.codecompanion.fidget-spinner"):init()
+      vim.keymap.set("n", "<leader>cc", "<CMD>CodeCompanion<CR>", { desc = "[C]ode [C]ompanion" })
+      -- vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>", { noremap = true, silent = true })
+      --
+      -- Set Up keymaps for adding buffer and file to the codecompanion buffer
+      -- TODO: check if codecompanion buffer is open currently and if not open it
+      -- TODO: fix the nvim cmp completion
+      vim.keymap.set("n", "<leader>cb", function()
+        -- Enter insert mode
+        vim.cmd("startinsert")
+
+        -- Insert "/buffer" at cursor position
+        vim.api.nvim_put({ "/buffer" }, "c", true, true)
+
+        vim.defer_fn(function()
+          local cmp = require("cmp")
+          cmp.complete({})
+          cmp.complete({})
+          cmp.confirm({ select = true })
+        end, 10)
+      end, { desc = "[C]hat [B]uffer command" })
     end,
   },
 
