@@ -231,3 +231,7 @@ alias cd=z
 export AICHAT_CONFIG_PATH=$HOME/.config/aichat
 export AICHAT_CONFIG_FILE=$AICHAT_CONFIG_PATH/config.yaml
 alias aic=aichat
+
+# uv
+eval "$(uv generate-shell-completion zsh)"
+eval "$(uvx --generate-shell-completion zsh)"
