@@ -1,5 +1,6 @@
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/.local/bin:$PATH
 
 # Install with sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 # Path to your oh-my-zsh installation.
@@ -103,6 +104,9 @@ source $ZSH/oh-my-zsh.sh
 
 # add cargo (rust) to path
 export PATH=$HOME/.cargo/bin:$PATH
+
+# add bun to path
+export PATH=$HOME/.bun/bin:$PATH
 
 export PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
 # export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"

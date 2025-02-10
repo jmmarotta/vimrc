@@ -362,6 +362,7 @@ require("lazy").setup({
           require("nvim-web-devicons").setup()
         end,
       },
+      { "nvim-telescope/telescope-live-grep-args.nvim" },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -405,6 +406,7 @@ require("lazy").setup({
       local telescope = require("telescope")
       pcall(telescope.load_extension, "fzf")
       pcall(telescope.load_extension, "ui-select")
+      pcall(telescope.load_extension, "live_grep_args")
       -- pcall(telescope.load_extension, "buffers")
       telescope.setup({
         -- You can put your default mappings / updates / etc. in here
@@ -415,6 +417,7 @@ require("lazy").setup({
             -- i = { ['<c-enter>'] = 'to_fuzzy_refine' },
             i = {
               ["<CR>"] = select_one_or_multi,
+              ["<C-h>"] = "which_key",
             },
           },
         },
@@ -429,6 +432,9 @@ require("lazy").setup({
           ["ui-select"] = {
             require("telescope.themes").get_dropdown(),
           },
+          live_grep_args = {
+            auto_quoting = true,
+          },
         },
       })
 
@@ -439,12 +445,54 @@ require("lazy").setup({
 
       -- See `:help telescope.builtin`
       local builtin = require("telescope.builtin")
+      local extensions = require("telescope").extensions
       vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
       vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
-      vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "[S]earch [F]iles" })
+      vim.keymap.set("n", "<leader>sf", function()
+        builtin.find_files({
+          hidden = true,
+          no_ignore = false,
+          file_ignore_patterns = {
+            -- Version Control
+            "^.git/",
+            -- Dependencies
+            "^node_modules/",
+            "^.npm/",
+            "^vendor/",
+            "^.bundle/",
+            "^.cargo/",
+            "^target/", -- Rust
+            "^dist/",
+            "^build/",
+            "^.next/", -- Next.js
+            "^.nuxt/", -- Nuxt.js
+            "^venv/", -- Python
+            "^.venv/",
+            "^__pycache__/",
+            "^.pytest_cache/",
+            -- IDE & Tools
+            "^.vscode/",
+            "^.idea/",
+            "^.settings/",
+            -- Logs & Caches
+            "%.log$",
+            "^.cache/",
+            "%.swp$",
+            "%.swo$",
+            -- Build outputs
+            "%.o$",
+            "%.obj$",
+            "%.dll$",
+            "%.class$",
+            "%.exe$",
+          },
+        })
+      end, { desc = "[S]earch [F]iles" })
       vim.keymap.set("n", "<leader>ss", builtin.builtin, { desc = "[S]earch [S]elect Telescope" })
       vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "[S]earch current [W]ord" })
-      vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
+      -- vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
+      -- See `:help telescope-live-grep-args` for the live_grep_args extension used below
+      vim.keymap.set("n", "<leader>sg", extensions.live_grep_args.live_grep_args, { desc = "[S]earch by [G]rep" })
       vim.keymap.set("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
       vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "[S]earch [R]esume" })
       vim.keymap.set("n", "<leader>s.", builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
@@ -578,7 +626,7 @@ require("lazy").setup({
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [E]xecute Action")
+          map("<leader>ce", vim.lsp.buf.code_action, "[C]ode [E]xecute Action")
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
@@ -1113,28 +1161,92 @@ require("lazy").setup({
     },
   },
   {
+    "MeanderingProgrammer/render-markdown.nvim",
+    opts = {
+      file_types = { "markdown", "codecompanion" },
+    },
+  },
+  {
     "olimorris/codecompanion.nvim",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
+      "j-hui/fidget.nvim",
     },
     opts = {
       strategies = {
         -- Change the default chat adapter
         chat = {
           adapter = "anthropic",
+          slash_commands = {
+            ["file"] = {
+              callback = "strategies.chat.slash_commands.file",
+              description = "Select a file using Telescope",
+              opts = {
+                provider = "telescope", -- Other options include 'default', 'mini_pick', 'fzf_lua', snacks
+                contains_code = true,
+              },
+            },
+            ["buffer"] = {
+              callback = "strategies.chat.slash_commands.buffer",
+              description = "Select a buffer using Telescope",
+              opts = {
+                provider = "telescope",
+                contains_code = true,
+              },
+            },
+          },
+        },
+        inline = {
+          adapter = "anthropic",
+          keymaps = {
+            accept_change = {
+              modes = { n = "ga" },
+              description = "Accept the suggested change",
+            },
+            reject_change = {
+              modes = { n = "gr" },
+              description = "Reject the suggested change",
+            },
+          },
         },
       },
       log_level = "DEBUG",
     },
     init = function()
-      vim.keymap.set("n", "<leader>cc", "<CMD>CodeCompanion<CR>", { desc = "[C]ode [C]ompanion" })
+      require("plugins.codecompanion.fidget-spinner"):init()
+      vim.keymap.set(
+        { "n", "v" },
+        "<leader>ca",
+        "<cmd>CodeCompanionActions<cr>",
+        { noremap = true, silent = true, desc = "[C]ode [C]ompanion Actions" }
+      )
       vim.keymap.set(
         "n",
         "<leader>cv",
-        "<CMD>CodeCompanionChat<CR>",
+        "<CMD>CodeCompanionChat Toggle<CR>",
         { desc = "[C]ode Companion [V]ertical Split Chat" }
       )
+      vim.keymap.set("n", "<leader>cc", "<CMD>CodeCompanion<CR>", { desc = "[C]ode [C]ompanion" })
+      -- vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>", { noremap = true, silent = true })
+      --
+      -- Set Up keymaps for adding buffer and file to the codecompanion buffer
+      -- TODO: check if codecompanion buffer is open currently and if not open it
+      -- TODO: fix the nvim cmp completion
+      vim.keymap.set("n", "<leader>cb", function()
+        -- Enter insert mode
+        vim.cmd("startinsert")
+
+        -- Insert "/buffer" at cursor position
+        vim.api.nvim_put({ "/buffer" }, "c", true, true)
+
+        vim.defer_fn(function()
+          local cmp = require("cmp")
+          cmp.complete({})
+          cmp.complete({})
+          cmp.confirm({ select = true })
+        end, 10)
+      end, { desc = "[C]hat [B]uffer command" })
     end,
   },
 
