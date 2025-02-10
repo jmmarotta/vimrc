@@ -1160,12 +1160,14 @@ require("lazy").setup({
       },
     },
   },
+
   {
     "MeanderingProgrammer/render-markdown.nvim",
     opts = {
       file_types = { "markdown", "codecompanion" },
     },
   },
+
   {
     "olimorris/codecompanion.nvim",
     dependencies = {
@@ -1182,6 +1184,7 @@ require("lazy").setup({
             ["file"] = {
               callback = "strategies.chat.slash_commands.file",
               description = "Select a file using Telescope",
+              -- TODO: should not be allowed to pick git ignored files
               opts = {
                 provider = "telescope", -- Other options include 'default', 'mini_pick', 'fzf_lua', snacks
                 contains_code = true,
@@ -1211,6 +1214,11 @@ require("lazy").setup({
           },
         },
       },
+      display = {
+        action_palate = {
+          provider = "telescope",
+        }
+      }
       log_level = "DEBUG",
     },
     init = function()
@@ -1247,6 +1255,21 @@ require("lazy").setup({
           cmp.confirm({ select = true })
         end, 10)
       end, { desc = "[C]hat [B]uffer command" })
+
+      vim.keymap.set("n", "<leader>cf", function()
+        -- Enter insert mode
+        vim.cmd("startinsert")
+
+        -- Insert "/buffer" at cursor position
+        vim.api.nvim_put({ "/file" }, "c", true, true)
+
+        vim.defer_fn(function()
+          local cmp = require("cmp")
+          cmp.complete({})
+          cmp.complete({})
+          cmp.confirm({ select = true })
+        end, 10)
+      end, { desc = "[C]hat [F]ile command" })
     end,
   },
 
