@@ -1217,8 +1217,8 @@ require("lazy").setup({
       display = {
         action_palate = {
           provider = "telescope",
-        }
-      }
+        },
+      },
       log_level = "DEBUG",
     },
     init = function()
@@ -1246,11 +1246,10 @@ require("lazy").setup({
         vim.cmd("startinsert")
 
         -- Insert "/buffer" at cursor position
-        vim.api.nvim_put({ "/buffer" }, "c", true, true)
+        vim.api.nvim_put({ "/buffer" }, "c", true, false)
 
         vim.defer_fn(function()
           local cmp = require("cmp")
-          cmp.complete({})
           cmp.complete({})
           cmp.confirm({ select = true })
         end, 10)
@@ -1261,11 +1260,10 @@ require("lazy").setup({
         vim.cmd("startinsert")
 
         -- Insert "/buffer" at cursor position
-        vim.api.nvim_put({ "/file" }, "c", true, true)
+        vim.api.nvim_put({ "/file" }, "c", true, false)
 
         vim.defer_fn(function()
           local cmp = require("cmp")
-          cmp.complete({})
           cmp.complete({})
           cmp.confirm({ select = true })
         end, 10)
