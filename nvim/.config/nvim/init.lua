@@ -1176,10 +1176,25 @@ require("lazy").setup({
       "j-hui/fidget.nvim",
     },
     opts = {
+      adapters = {
+        openai = function()
+          return require("codecompanion.adapters").extend("openai", {
+            schema = {
+              model = {
+                default = "o3-mini-2025-01-31",
+              },
+              resoning_effort = {
+                default = "high",
+              },
+            },
+          })
+        end,
+      },
       strategies = {
         -- Change the default chat adapter
         chat = {
-          adapter = "anthropic",
+          -- adapter = "anthropic",
+          adapter = "openai",
           slash_commands = {
             ["file"] = {
               callback = "strategies.chat.slash_commands.file",
