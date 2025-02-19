@@ -990,16 +990,30 @@ require("lazy").setup({
   --   -- config = function()
   --   require("everforest").setup(),
   -- },
+  -- {
+  --   "ellisonleao/gruvbox.nvim",
+  --   version = false,
+  --   lazy = false,
+  --   priority = 1000, -- make sure to load this before all the other start plugins
+  --   -- Optional; default configuration will be used if setup isn't called.
+  --   config = function()
+  --     require("gruvbox").setup()
+  --     vim.o.background = "dark" -- or "light" for light mode
+  --     vim.cmd([[colorscheme gruvbox]])
+  --   end,
+  -- },
   {
-    "ellisonleao/gruvbox.nvim",
-    version = false,
-    lazy = false,
-    priority = 1000, -- make sure to load this before all the other start plugins
-    -- Optional; default configuration will be used if setup isn't called.
+    "sainnhe/gruvbox-material",
+    lazy = false, -- Load immediately
+    priority = 1000, -- Ensure it loads before other plugins
     config = function()
-      require("gruvbox").setup()
-      vim.o.background = "dark" -- or "light" for light mode
-      vim.cmd([[colorscheme gruvbox]])
+      -- Optional: customize the appearance (choose 'hard', 'medium', or 'soft')
+      vim.g.gruvbox_material_background = "hard"
+      -- Optional: you can also adjust other settings, e.g.,
+      -- vim.g.gruvbox_material_foreground = "original"
+      -- Set gruvbox-material as the active colorscheme
+      vim.g.gruvbox_material_enable_italic = true
+      vim.cmd("colorscheme gruvbox-material")
     end,
   },
 
