@@ -759,6 +759,7 @@ require("lazy").setup({
         "prettierd", -- Used to format javascript/typescript
         "biome", -- Used to format/lint javascript/typescript
         "markdownlint", -- Used to lint markdown
+        "tflint", -- Used to lint terraform
       })
       require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -1102,6 +1103,7 @@ require("lazy").setup({
         "go",
         "ruby",
         "sql",
+        "terraform",
       },
       -- Autoinstall languages that are not installed
       auto_install = true,
@@ -1190,7 +1192,49 @@ require("lazy").setup({
       "j-hui/fidget.nvim",
     },
     opts = {
+      prompt_library = {
+        ["claude.ai"] = {
+          strategy = "chat",
+          description = "The system prompt for Claude.ai",
+          opts = {
+            index = 1,
+            is_default = true,
+            auto_submit = false,
+            user_prompt = false,
+          },
+          prompts = {
+            {
+              role = "system",
+              content = function(context)
+                local file_path = vim.fn.stdpath("config") .. "/lua/plugins/codecompanion/claude-system-prompt.txt"
+                local lines = vim.fn.readfile(file_path)
+                local content_str = table.concat(lines, "\n")
+                return content_str:gsub("{{currentDateTime}}", vim.fn.strftime("%Y-%m-%d")) .. "\n\n---\n"
+              end,
+              opts = {
+                visible = false,
+              },
+            },
+            {
+              role = "user",
+              content = "",
+            },
+          },
+        },
+      },
       adapters = {
+        anthropic = function()
+          return require("codecompanion.adapters").extend("anthropic", {
+            schema = {
+              model = {
+                default = "claude-3-7-sonnet-20250219",
+              },
+              extended_output = {
+                default = true,
+              },
+            },
+          })
+        end,
         openai = function()
           return require("codecompanion.adapters").extend("openai", {
             schema = {
@@ -1207,8 +1251,8 @@ require("lazy").setup({
       strategies = {
         -- Change the default chat adapter
         chat = {
-          -- adapter = "anthropic",
-          adapter = "openai",
+          adapter = "anthropic",
+          -- adapter = "openai",
           slash_commands = {
             ["file"] = {
               callback = "strategies.chat.slash_commands.file",
