@@ -50,6 +50,37 @@ return {
           lint.try_lint()
         end,
       })
+
+      -- Run tflint --init
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "terraform",
+        callback = function()
+          -- Try to find the project root
+          local current_dir = vim.fn.expand("%:p:h")
+          local root_dir = current_dir
+
+          -- Look for .terraform or .git to identify project root
+          while vim.fn.isdirectory(root_dir) == 1 do
+            if vim.fn.isdirectory(root_dir .. "/.terraform") == 1 or vim.fn.isdirectory(root_dir .. "/.git") == 1 then
+              break
+            end
+
+            local parent_dir = vim.fn.fnamemodify(root_dir, ":h")
+            if parent_dir == root_dir then
+              -- We've reached filesystem root
+              root_dir = current_dir -- Fall back to current directory
+              break
+            end
+            root_dir = parent_dir
+          end
+
+          -- Check if .tflint.hcl exists in the project root
+          if vim.fn.filereadable(root_dir .. "/.tflint.hcl") == 0 then
+            vim.fn.system("cd " .. root_dir .. " && tflint --init")
+            print("TFLint initialized in " .. root_dir)
+          end
+        end,
+      })
     end,
   },
 }
