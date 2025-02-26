@@ -389,11 +389,30 @@ require("lazy").setup({
       local select_one_or_multi = function(prompt_bufnr)
         local picker = require("telescope.actions.state").get_current_picker(prompt_bufnr)
         local multi = picker:get_multi_selection()
+
+        -- Get the picker name to identify CodeCompanion pickers
+        local picker_type = picker.prompt_title or ""
+
+        -- Check if this is a CodeCompanion picker by looking for keywords in the title
+        local is_codecompanion = string.find(picker_type, "Select file%(s%)")
+          or string.find(picker_type, "Select buffer%(s%)")
+
+        -- Use default behavior for CodeCompanion pickers
+        if is_codecompanion then
+          require("telescope.actions").select_default(prompt_bufnr)
+          return
+        end
+
+        -- Handle multi-selection for other pickers
         if not vim.tbl_isempty(multi) then
           require("telescope.actions").close(prompt_bufnr)
           for _, j in pairs(multi) do
             if j.path ~= nil then
-              vim.cmd(string.format("%s %s", "edit", j.path))
+              if j.lnum ~= nil then
+                vim.cmd(string.format("%s %s:%s", "edit", j.path, j.lnum))
+              else
+                vim.cmd(string.format("%s %s", "edit", j.path))
+              end
             end
           end
         else
@@ -404,10 +423,6 @@ require("lazy").setup({
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
       local telescope = require("telescope")
-      pcall(telescope.load_extension, "fzf")
-      pcall(telescope.load_extension, "ui-select")
-      pcall(telescope.load_extension, "live_grep_args")
-      -- pcall(telescope.load_extension, "buffers")
       telescope.setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
@@ -439,9 +454,10 @@ require("lazy").setup({
       })
 
       -- Enable Telescope extensions if they are installed
-      -- pcall(require("telescope").load_extension, "fzf")
-      -- pcall(require("telescope").load_extension, "ui-select")
-      -- pcall(require("telescope").load_extension, "buffers")
+      pcall(telescope.load_extension, "fzf")
+      pcall(telescope.load_extension, "ui-select")
+      pcall(telescope.load_extension, "buffers")
+      pcall(telescope.load_extension, "live_grep_args")
 
       -- See `:help telescope.builtin`
       local builtin = require("telescope.builtin")
