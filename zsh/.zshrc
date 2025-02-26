@@ -152,7 +152,7 @@ tmux9() {
 
 alias nvc="nvim ~/.config/nvim/init.lua"
 
-alias aicp="git ls-files | while read file; do echo \"=== $file ===\"; cat \"$file\"; echo; done | pbcopy"
+alias aicp='git ls-files | while read file; do echo "=== $file ==="; cat "$file"; echo; done | pbcopy'
 
 ###-begin-npm-completion-###
 #
