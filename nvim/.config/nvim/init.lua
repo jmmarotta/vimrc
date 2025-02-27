@@ -776,6 +776,7 @@ require("lazy").setup({
         "biome", -- Used to format/lint javascript/typescript
         "markdownlint", -- Used to lint markdown
         "tflint", -- Used to lint terraform
+        "actionlint", -- Used to lint github actions
       })
       require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -1315,10 +1316,10 @@ require("lazy").setup({
       -- end, { desc = "[C]hat [F]ile command" })
     end,
     keys = {
-      { "<leader>ca", "<cmd>CodeCompanionActions<cr>", desc = "[C]ode [C]ompanion Actions" },
+      { "<leader>ca", "<cmd>CodeCompanionActions<cr>", desc = "[C]ode Companion [A]ctions" },
       { "<leader>cv", "<CMD>CodeCompanionChat Toggle<CR>", desc = "[C]ode Companion [V]ertical Split Chat" },
       { "<leader>cc", "<CMD>CodeCompanion<CR>", desc = "[C]ode [C]ompanion" },
-      { "ga", "<cmd>CodeCompanionChat Add<cr>", noremap = true, silent = true, desc = "[C]ode Companion [A]dd" },
+      -- { "ga", "<cmd>CodeCompanionChat Add<cr>", noremap = true, silent = true, desc = "[C]ode Companion [A]dd" },
     },
     opts = {
       prompt_library = {
