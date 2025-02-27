@@ -734,7 +734,7 @@ require("lazy").setup({
         -- ruby
         -- rubocop = {},
         -- solargraph = {},
-        -- standardrb = {},
+        standardrb = {},
 
         -- terraform
         terraformls = {},
@@ -1207,6 +1207,119 @@ require("lazy").setup({
       "nvim-treesitter/nvim-treesitter",
       "j-hui/fidget.nvim",
     },
+    init = function()
+      require("plugins.codecompanion.fidget-spinner"):init()
+      -- Toggle extended thinking mode
+      CodecompanionExtendedThinking = false -- Default to false
+      AnthropicToggle = function()
+        return require("codecompanion.adapters").extend("anthropic", {
+          schema = {
+            model = {
+              default = "claude-3-7-sonnet-20250219",
+            },
+            extended_output = {
+              default = CodecompanionExtendedThinking,
+            },
+            extended_thinking = {
+              default = CodecompanionExtendedThinking,
+            },
+            thinking_budget = {
+              default = CodecompanionExtendedThinking and 16000 or nil,
+            },
+            max_tokens = {
+              default = function()
+                if CodecompanionExtendedThinking then
+                  return 16000 + 1000
+                end
+
+                return 8192
+              end,
+            },
+          },
+        })
+      end
+
+      CodecompanionExtendedThinkingBufnr = nil -- Default to nil
+      vim.api.nvim_create_user_command("CodeCompanionToggleThinking", function()
+        local util = require("codecompanion.utils")
+        local toggle_thinking = function(chat)
+          CodecompanionExtendedThinking = not CodecompanionExtendedThinking
+          chat.adapter = AnthropicToggle()
+          util.fire(
+            "ChatAdapter",
+            { bufnr = chat.bufnr, adapter = require("codecompanion.adapters").make_safe(chat.adapter) }
+          )
+          chat.ui.adapter = chat.adapter
+          chat:apply_settings()
+        end
+
+        local chat = require("codecompanion").last_chat()
+
+        if not chat then
+          util.notify("CodeCompanion: Chat must be open to enable thinking mode", vim.log.levels.ERROR)
+          return
+        end
+
+        if chat.adapter.name ~= "anthropic" then
+          util.notify(
+            "CodeCompanion: Anthropic Extended thinking is only available for Anthropic",
+            vim.log.levels.ERROR
+          )
+          return
+        end
+
+        if chat and chat.bufnr ~= CodecompanionExtendedThinkingBufnr then
+          CodecompanionExtendedThinking = false
+          CodecompanionExtendedThinkingBufnr = chat.bufnr
+        end
+        toggle_thinking(chat)
+
+        local status = CodecompanionExtendedThinking and "enabled" or "disabled"
+        util.notify("CodeCompanion: Anthropic Extended thinking " .. status, vim.log.levels.INFO)
+      end, {})
+
+      vim.keymap.set(
+        "n",
+        "<leader>ct",
+        ":CodeCompanionToggleThinking<CR>",
+        { desc = "[C]ode Companion [T]oggle Thinking", silent = true }
+      )
+
+      -- Set Up keymaps for adding buffer and file to the codecompanion buffer
+      -- vim.keymap.set("n", "<leader>cb", function()
+      --   -- Enter insert mode
+      --   vim.cmd("startinsert")
+
+      --   -- Insert "/buffer" at cursor position
+      --   vim.api.nvim_put({ "/buffer" }, "c", true, false)
+
+      --   vim.defer_fn(function()
+      --     local cmp = require("cmp")
+      --     cmp.complete({})
+      --     cmp.confirm({ select = true })
+      --   end, 10)
+      -- end, { desc = "[C]hat [B]uffer command" })
+
+      -- vim.keymap.set("n", "<leader>cf", function()
+      --   -- Enter insert mode
+      --   vim.cmd("startinsert")
+
+      --   -- Insert "/buffer" at cursor position
+      --   vim.api.nvim_put({ "/file" }, "c", true, false)
+
+      --   vim.defer_fn(function()
+      --     local cmp = require("cmp")
+      --     cmp.complete({})
+      --     cmp.confirm({ select = true })
+      --   end, 10)
+      -- end, { desc = "[C]hat [F]ile command" })
+    end,
+    keys = {
+      { "<leader>ca", "<cmd>CodeCompanionActions<cr>", desc = "[C]ode [C]ompanion Actions" },
+      { "<leader>cv", "<CMD>CodeCompanionChat Toggle<CR>", desc = "[C]ode Companion [V]ertical Split Chat" },
+      { "<leader>cc", "<CMD>CodeCompanion<CR>", desc = "[C]ode [C]ompanion" },
+      { "ga", "<cmd>CodeCompanionChat Add<cr>", noremap = true, silent = true, desc = "[C]ode Companion [A]dd" },
+    },
     opts = {
       prompt_library = {
         ["claude.ai"] = {
@@ -1240,16 +1353,7 @@ require("lazy").setup({
       },
       adapters = {
         anthropic = function()
-          return require("codecompanion.adapters").extend("anthropic", {
-            schema = {
-              model = {
-                default = "claude-3-7-sonnet-20250219",
-              },
-              extended_output = {
-                default = true,
-              },
-            },
-          })
+          return AnthropicToggle()
         end,
         openai = function()
           return require("codecompanion.adapters").extend("openai", {
@@ -1310,54 +1414,6 @@ require("lazy").setup({
       },
       log_level = "DEBUG",
     },
-    init = function()
-      require("plugins.codecompanion.fidget-spinner"):init()
-      vim.keymap.set(
-        { "n", "v" },
-        "<leader>ca",
-        "<cmd>CodeCompanionActions<cr>",
-        { noremap = true, silent = true, desc = "[C]ode [C]ompanion Actions" }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>cv",
-        "<CMD>CodeCompanionChat Toggle<CR>",
-        { desc = "[C]ode Companion [V]ertical Split Chat" }
-      )
-      vim.keymap.set("n", "<leader>cc", "<CMD>CodeCompanion<CR>", { desc = "[C]ode [C]ompanion" })
-      -- vim.keymap.set("v", "ga", "<cmd>CodeCompanionChat Add<cr>", { noremap = true, silent = true })
-      --
-      -- Set Up keymaps for adding buffer and file to the codecompanion buffer
-      -- TODO: check if codecompanion buffer is open currently and if not open it
-      -- TODO: fix the nvim cmp completion
-      vim.keymap.set("n", "<leader>cb", function()
-        -- Enter insert mode
-        vim.cmd("startinsert")
-
-        -- Insert "/buffer" at cursor position
-        vim.api.nvim_put({ "/buffer" }, "c", true, false)
-
-        vim.defer_fn(function()
-          local cmp = require("cmp")
-          cmp.complete({})
-          cmp.confirm({ select = true })
-        end, 10)
-      end, { desc = "[C]hat [B]uffer command" })
-
-      vim.keymap.set("n", "<leader>cf", function()
-        -- Enter insert mode
-        vim.cmd("startinsert")
-
-        -- Insert "/buffer" at cursor position
-        vim.api.nvim_put({ "/file" }, "c", true, false)
-
-        vim.defer_fn(function()
-          local cmp = require("cmp")
-          cmp.complete({})
-          cmp.confirm({ select = true })
-        end, 10)
-      end, { desc = "[C]hat [F]ile command" })
-    end,
   },
 
   -- example of loading a local plugin
