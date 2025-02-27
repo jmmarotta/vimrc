@@ -1315,10 +1315,10 @@ require("lazy").setup({
       -- end, { desc = "[C]hat [F]ile command" })
     end,
     keys = {
-      { "<leader>ca", "<cmd>CodeCompanionActions<cr>", desc = "[C]ode [C]ompanion Actions" },
+      { "<leader>ca", "<cmd>CodeCompanionActions<cr>", desc = "[C]ode Companion [A]ctions" },
       { "<leader>cv", "<CMD>CodeCompanionChat Toggle<CR>", desc = "[C]ode Companion [V]ertical Split Chat" },
       { "<leader>cc", "<CMD>CodeCompanion<CR>", desc = "[C]ode [C]ompanion" },
-      { "ga", "<cmd>CodeCompanionChat Add<cr>", noremap = true, silent = true, desc = "[C]ode Companion [A]dd" },
+      -- { "ga", "<cmd>CodeCompanionChat Add<cr>", noremap = true, silent = true, desc = "[C]ode Companion [A]dd" },
     },
     opts = {
       prompt_library = {
