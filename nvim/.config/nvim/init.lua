@@ -776,6 +776,7 @@ require("lazy").setup({
         "biome", -- Used to format/lint javascript/typescript
         "markdownlint", -- Used to lint markdown
         "tflint", -- Used to lint terraform
+        "actionlint", -- Used to lint github actions
       })
       require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
