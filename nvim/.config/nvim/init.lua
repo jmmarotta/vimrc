@@ -848,6 +848,10 @@ require("lazy").setup({
           clear_suggestion = "<C-]>",
           accept_word = "<C-'>",
         },
+        ignore_filetypes = { "" },
+        condition = function()
+          return vim.fn.expand("%:t") == ".private_variables"
+        end,
       })
     end,
   },
