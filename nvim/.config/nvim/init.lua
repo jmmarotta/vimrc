@@ -1125,6 +1125,8 @@ require("lazy").setup({
         "ruby",
         "sql",
         "terraform",
+        "yaml",
+        "json",
       },
       -- Autoinstall languages that are not installed
       auto_install = true,
