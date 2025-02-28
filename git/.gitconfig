@@ -1,28 +1,63 @@
 [user]
 	name = ### YOUR NAME ###
 	email = ### YOUR EMAIL ###
-[init]
-	defaultBranch = main
 [core]
 	editor = nvim
 	pager = delta
+	excludesfile = ~/.gitignore
 [color]
 	ui = auto
-[push]
-	default = simple
-[pull]
-	rebase = true
 [commit]
 	gpgsign = false
 [hub]
 	protocol = ssh
 [interactive]
 	diffFilter = delta --color-only
+[column]
+	ui = auto
+[branch]
+	sort = -committerdate
+[tag]
+	sort = version:refname
+[init]
+	defaultBranch = main
+[diff]
+	algorithm = histogram
+	# colorMoved = plain
+	# Changed for delta (I think...)
+	colorMoved = default
+	mnemonicPrefix = true
+	renames = true
+[push]
+	default = simple
+	autoSetupRemote = true
+	followTags = true
+[fetch]
+	prune = true
+	pruneTags = true
+	all = true
+[help]
+	autocorrect = prompt
+[commit]
+	verbose = true
+[rerere]
+	enabled = true
+	autoupdate = true
+[rebase]
+	autoSquash = true
+	autoStash = true
+	updateRefs = true
 [delta]
-	navigate = true    # use n and N to move between diff sections
+	navigate = true		# use n and N to move between diff sections
 	line-numbers = true
 	side-by-side = true
+[pull]
+	rebase = true
+[core]
+	# fsmonitor = true
+	# untrackedCache = true
 [merge]
-	conflictstyle = diff3
-[diff]
-	colorMoved = default
+	# (just 'diff3' if git version < 2.3)
+	# conflictstyle = zdiff3 
+
+# https://blog.gitbutler.com/how-git-core-devs-configure-git/?utm_source=tldrwebdev
